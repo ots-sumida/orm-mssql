@@ -174,11 +174,24 @@ await User.findAll({
 | `modules/db/connection.js` → `connect()` | env 取得 → connection 生成 |
 | `modules/db/sample/create/create-user.js` | `create` |
 | `modules/db/sample/create/create-users.js` | `bulkCreate` |
+| `modules/db/sample/create/find-or-create-user.js` | `findOrCreate` |
+| `modules/db/sample/create/build-save-user.js` | `build`, `save` |
+| `modules/db/sample/create/upsert-user.js` | `upsert` |
 | `modules/db/sample/find/find-user.js` | `findOne`, `findByPk` |
 | `modules/db/sample/find/find-users.js` | `findAll` |
+| `modules/db/sample/find/find-users-where.js` | `Op.like`, `Op.in` |
+| `modules/db/sample/find/find-users-options.js` | `attributes`, `limit`, `offset`, `raw` |
+| `modules/db/sample/find/find-users-count.js` | `count`, `findAndCountAll` |
+| `modules/db/sample/find/find-users-aggregate.js` | `max`, `min`, `sum` |
 | `modules/db/sample/update/update-user.js` | `update` |
+| `modules/db/sample/update/save-user.js` | `save` |
 | `modules/db/sample/delete/delete-user.js` | `destroy` |
+| `modules/db/sample/delete/truncate-users.js` | `truncate` |
+| `modules/db/sample/query/query-select.js` | `sequelize.query` |
+| `modules/db/sample/transaction/transaction-commit.js` | `transaction`, `commit` |
+| `modules/db/sample/transaction/transaction-rollback.js` | `transaction`, `rollback` |
 | `modules/db/sample/sync/sync-table.js` | `sync` |
+| `modules/db/sample/sync/sync-force-table.js` | `sync({ force: true })` |
 
 ---
 
