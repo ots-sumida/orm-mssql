@@ -1,31 +1,72 @@
 import { User } from './tables/user.js';
 
-export async function createUser({ name, email }) {
-  const existing = await User.findOne({ where: { email } });
+/**
+ * トランザクション内で処理を実行し、成功時 commit・失敗時 rollback する。
+ *
+ * @template T
+ * @param {(transaction: import('sequelize').Transaction) => Promise<T>} fn
+ * @returns {Promise<T>}
+ */
+async function withTransaction(fn) {
+  const transaction = await User.sequelize.transaction();
+
+  try {
+    const result = await fn(transaction);
+    await transaction.commit();
+    return result;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+}
+
+/**
+ * @param {{ name: string, email: string }} params
+ * @param {{ transaction?: import('sequelize').Transaction }} [options]
+ */
+export async function createUser({ name, email }, { transaction } = {}) {
+  const queryOptions = transaction ? { transaction } : {};
+
+  const existing = await User.findOne({
+    where: { email },
+    ...queryOptions,
+  });
+
   if (existing) {
     console.log(`スキップ（既存）: id=${existing.id}, name=${existing.name}, email=${existing.email}`);
     return existing;
   }
 
-  const user = await User.create({ name, email });
+  const user = await User.create({ name, email }, queryOptions);
   console.log(`作成: id=${user.id}, name=${user.name}, email=${user.email}`);
   return user;
 }
 
 export async function createSampleUsers() {
-  await createUser({ name: '山田太郎', email: 'taro@example.com' });
-  await createUser({ name: '佐藤花子', email: 'hanako@example.com' });
+  await withTransaction(async (transaction) => {
+    await createUser({ name: '山田太郎', email: 'taro@example.com' }, { transaction });
+    await createUser({ name: '佐藤花子', email: 'hanako@example.com' }, { transaction });
+  });
+
+  console.log('createSampleUsers: トランザクション commit 完了');
 }
 
 export async function runUserDemo() {
-  const user = await User.findOne({ where: { email: 'taro@example.com' } });
-  if (!user) {
-    throw new Error('taro@example.com のレコードが見つかりません');
-  }
-  console.log(`取得: id=${user.id}, name=${user.name}, email=${user.email}`);
+  await withTransaction(async (transaction) => {
+    const user = await User.findOne({
+      where: { email: 'taro@example.com' },
+      transaction,
+    });
 
-  await user.update({ name: '山田太郎（更新済み）' });
-  console.log(`更新後: id=${user.id}, name=${user.name}`);
+    if (!user) {
+      throw new Error('taro@example.com のレコードが見つかりません');
+    }
+
+    console.log(`取得: id=${user.id}, name=${user.name}, email=${user.email}`);
+
+    await user.update({ name: '山田太郎（更新済み）' }, { transaction });
+    console.log(`更新後: id=${user.id}, name=${user.name}`);
+  });
 
   const allUsers = await User.findAll({ order: [['id', 'ASC']] });
   console.log(`\n全件取得 (${allUsers.length}件):`);
@@ -33,3 +74,5 @@ export async function runUserDemo() {
     console.log(`  id=${u.id}, name=${u.name}, email=${u.email}`);
   }
 }
+
+export { withTransaction };

@@ -168,8 +168,9 @@ await User.findAll({
 
 | ファイル | 使っている操作 |
 |----------|----------------|
-| `models/user-model.js` → `createUser` | `findOne`, `create` |
-| `models/user-model.js` → `runUserDemo` | `findOne`, `update`, `findAll` |
+| `models/user-model.js` → `createUser` | `findOne`, `create`（`transaction` オプション） |
+| `models/user-model.js` → `createSampleUsers` | `transaction`, `commit`, `rollback` |
+| `models/user-model.js` → `runUserDemo` | `findOne`, `update`, `findAll`, `transaction` |
 | `modules/db/connection.js` | `authenticate`, `query`, `close` |
 | `modules/db/connection.js` → `connect()` | env 取得 → connection 生成 |
 | `modules/db/sample/create/create-user.js` | `create` |
