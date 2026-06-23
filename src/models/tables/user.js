@@ -1,5 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from '../db.js';
+import { connect } from '../../modules/db/index.js';
+
+const { sequelize } = connect();
 
 /**
  * @typedef {Object} UserAttributes

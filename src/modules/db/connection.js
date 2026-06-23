@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import { buildSequelizeOptions } from './config/db-config.js';
+import { loadDbConfigFromEnv } from './config/env-config-provider.js';
 
 /**
  * @param {import('./config/db-config.js').DbConfig} dbConfig
@@ -57,4 +58,29 @@ export function createConnectionManager(dbConfig) {
       await sequelize.close();
     },
   };
+}
+
+/**
+ * .env から設定を読み込んで接続を生成する。
+ *
+ * @param {NodeJS.ProcessEnv} [env]
+ * @returns {ReturnType<typeof createConnectionManager>}
+ */
+export function createConnectionFromEnv(env = process.env) {
+  return createConnectionManager(loadDbConfigFromEnv(env));
+}
+
+let sharedConnection = null;
+
+/**
+ * アプリ全体で共有する DB 接続を返す（初回のみ生成）。
+ *
+ * @param {NodeJS.ProcessEnv} [env]
+ * @returns {ReturnType<typeof createConnectionManager>}
+ */
+export function connect(env = process.env) {
+  if (!sharedConnection) {
+    sharedConnection = createConnectionFromEnv(env);
+  }
+  return sharedConnection;
 }

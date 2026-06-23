@@ -1,4 +1,6 @@
-import { db } from './db.js';
+import { connect } from './modules/db/index.js';
+
+const db = connect();
 
 try {
   await db.testConnection();

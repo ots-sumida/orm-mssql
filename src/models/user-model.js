@@ -1,4 +1,4 @@
-import { User } from './user.js';
+import { User } from './tables/user.js';
 
 export async function createUser({ name, email }) {
   const existing = await User.findOne({ where: { email } });

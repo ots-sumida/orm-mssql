@@ -3,8 +3,10 @@
 このプロジェクト（`User` モデル）を例に、Sequelize でよく使う DB 操作を列挙します。
 
 ```javascript
-import { User } from '../models/user.js';
-import { sequelize } from '../db.js';
+import { User } from '../models/tables/user.js';
+import { connect } from '../modules/db/index.js';
+
+const { sequelize } = connect();
 ```
 
 ---
@@ -166,10 +168,10 @@ await User.findAll({
 
 | ファイル | 使っている操作 |
 |----------|----------------|
-| `user-model.js` → `createUser` | `findOne`, `create` |
-| `user-model.js` → `runUserDemo` | `findOne`, `update`, `findAll` |
-| `sequelize/connection.js` | `authenticate`, `query`, `close` |
-| `db.js` | env 取得 → connection 生成 |
+| `models/user-model.js` → `createUser` | `findOne`, `create` |
+| `models/user-model.js` → `runUserDemo` | `findOne`, `update`, `findAll` |
+| `modules/db/connection.js` | `authenticate`, `query`, `close` |
+| `modules/db/connection.js` → `connect()` | env 取得 → connection 生成 |
 | `demo.js` | `sync` |
 
 ---

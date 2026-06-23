@@ -1,6 +1,8 @@
-import { db } from './db.js';
-import { User } from './models/user.js';
+import { connect } from './modules/db/index.js';
+import { User } from './models/tables/user.js';
 import { createSampleUsers } from './models/user-model.js';
+
+const db = connect();
 
 async function main() {
   try {
