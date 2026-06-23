@@ -5,8 +5,8 @@ import {
   defaultDbOptions,
   parseBoolean,
   parseInteger,
-} from '../config/db-config.js';
-import { loadDbConfigFromEnv } from '../config/env-config-provider.js';
+} from '../../config/client/sqlsv-client-config.js';
+import { loadDbConfigFromEnv } from '../../config/providers/env-config-provider.js';
 
 const baseConfig = {
   host: 'localhost',

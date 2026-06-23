@@ -1,3 +1,5 @@
+import { parseBoolean, parseInteger } from '../../validation/common/well-used-validation.js';
+
 /**
  * @typedef {Object} DbConfig
  * @property {string} host
@@ -15,26 +17,7 @@
  * @property {number} requestTimeout
  */
 
-export function parseBoolean(value, defaultValue) {
-  if (value === undefined || value === '') {
-    return defaultValue;
-  }
-
-  return value.toLowerCase() === 'true';
-}
-
-export function parseInteger(value, defaultValue) {
-  if (value === undefined || value === '') {
-    return defaultValue;
-  }
-
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed)) {
-    throw new Error(`数値として解釈できません: ${value}`);
-  }
-
-  return parsed;
-}
+export { parseBoolean, parseInteger };
 
 /** @type {Pick<DbConfig, 'poolMax' | 'poolMin' | 'poolAcquire' | 'poolIdle' | 'connectTimeout' | 'requestTimeout'>} */
 export const defaultDbOptions = {

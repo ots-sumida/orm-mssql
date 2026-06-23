@@ -1,12 +1,12 @@
 import dotenv from 'dotenv';
-import { defaultDbOptions, parseBoolean, parseInteger } from './db-config.js';
+import { assertValid, parseBoolean, parseInteger, requireAllNonEmpty } from '../../validation/common/well-used-validation.js';
+import { defaultDbOptions } from '../client/sqlsv-client-config.js';
 
 /**
  * .env / process.env から DB 接続設定を取得する。
- * 将来 Key Vault 用プロバイダを追加する場合も、同じ DbConfig 形式を返す。
  *
  * @param {NodeJS.ProcessEnv} [env]
- * @returns {import('./db-config.js').DbConfig}
+ * @returns {import('../client/sqlsv-client-config.js').DbConfig}
  */
 export function loadDbConfigFromEnv(env = process.env) {
   dotenv.config();
@@ -27,15 +27,11 @@ export function loadDbConfigFromEnv(env = process.env) {
     DB_REQUEST_TIMEOUT,
   } = env;
 
-  const missing = [];
-  if (!DB_HOST) missing.push('DB_HOST');
-  if (!DB_NAME) missing.push('DB_NAME');
-  if (!DB_USER) missing.push('DB_USER');
-  if (!DB_PASSWORD) missing.push('DB_PASSWORD');
-
-  if (missing.length > 0) {
-    throw new Error(`DB 接続に必要な環境変数が未設定です: ${missing.join(', ')}`);
-  }
+  assertValid(requireAllNonEmpty(
+    { DB_HOST, DB_NAME, DB_USER, DB_PASSWORD },
+    ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'],
+    { prefix: 'DB 接続に必要な環境変数が未設定です' },
+  ));
 
   return {
     host: DB_HOST,

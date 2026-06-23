@@ -1,8 +1,8 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import dotenv from 'dotenv';
-import { createConnectionManager, createSequelize } from '../connection.js';
-import { loadDbConfigFromEnv } from '../config/env-config-provider.js';
+import { createConnectionManager, createSequelize } from '../connection/connection.js';
+import { loadDbConfigFromEnv } from '../../config/providers/env-config-provider.js';
 
 dotenv.config();
 

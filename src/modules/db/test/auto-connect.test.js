@@ -8,7 +8,7 @@ import {
   withDb,
   getSequelize,
 } from '../index.js';
-import { loadDbConfigFromEnv } from '../config/env-config-provider.js';
+import { loadDbConfigFromEnv } from '../../config/providers/env-config-provider.js';
 
 dotenv.config();
 

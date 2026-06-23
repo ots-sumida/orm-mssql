@@ -171,8 +171,8 @@ await User.findAll({
 | `models/user-model.js` → `createUser` | `findOne`, `create`（`transaction` オプション） |
 | `models/user-model.js` → `createSampleUsers` | `transaction`, `commit`, `rollback` |
 | `models/user-model.js` → `runUserDemo` | `findOne`, `update`, `findAll`, `transaction` |
-| `modules/db/connection.js` | `authenticate`, `query`, `close` |
-| `modules/db/connection.js` → `connect()` | env 取得 → connection 生成 |
+| `modules/db/connection/connection.js` | `authenticate`, `query`, `close` |
+| `modules/db/connection/connection.js` → `connect()` | env 取得 → connection 生成 |
 | `modules/db/sample/create/create-user.js` | `create` |
 | `modules/db/sample/create/create-users.js` | `bulkCreate` |
 | `modules/db/sample/create/find-or-create-user.js` | `findOrCreate` |

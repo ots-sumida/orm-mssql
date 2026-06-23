@@ -1,9 +1,10 @@
 import { Sequelize } from 'sequelize';
-import { buildSequelizeOptions } from './config/db-config.js';
-import { loadDbConfigFromEnv } from './config/env-config-provider.js';
+import { buildSequelizeOptions } from '../../config/client/sqlsv-client-config.js';
+import { extractDbConfigFromEnv } from '../../config/extractor/config-extractor.js';
+import { assertSqlParamsMatch } from '../../validation/sql/param-checker.js';
 
 /**
- * @param {import('./config/db-config.js').DbConfig} dbConfig
+ * @param {import('../../config/client/sqlsv-client-config.js').DbConfig} dbConfig
  * @param {string} [database]
  * @returns {Sequelize}
  */
@@ -17,7 +18,7 @@ export function createSequelize(dbConfig, database = dbConfig.database) {
 }
 
 /**
- * @param {import('./config/db-config.js').DbConfig} dbConfig
+ * @param {import('../../config/client/sqlsv-client-config.js').DbConfig} dbConfig
  */
 export function createConnectionManager(dbConfig) {
   const sequelize = createSequelize(dbConfig);
@@ -51,10 +52,13 @@ export function createConnectionManager(dbConfig) {
       try {
         await adminSequelize.authenticate();
 
-        const [results] = await adminSequelize.query(
-          `SELECT name FROM sys.databases WHERE name = :dbName`,
-          { replacements: { dbName: dbConfig.database } },
-        );
+        const findDbSql = 'SELECT name FROM sys.databases WHERE name = :dbName';
+        const findDbReplacements = { dbName: dbConfig.database };
+        assertSqlParamsMatch(findDbSql, findDbReplacements);
+
+        const [results] = await adminSequelize.query(findDbSql, {
+          replacements: findDbReplacements,
+        });
 
         if (results.length > 0) {
           console.log(`データベース "${dbConfig.database}" は既に存在します。`);
@@ -83,7 +87,7 @@ export function createConnectionManager(dbConfig) {
  * @returns {ReturnType<typeof createConnectionManager>}
  */
 export function createConnectionFromEnv(env = process.env) {
-  return createConnectionManager(loadDbConfigFromEnv(env));
+  return createConnectionManager(extractDbConfigFromEnv(env));
 }
 
 let sharedConnection = null;
