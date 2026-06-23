@@ -1,4 +1,4 @@
-import { connect } from './modules/db/index.js';
+import { connect } from '../../index.js';
 
 const db = connect();
 

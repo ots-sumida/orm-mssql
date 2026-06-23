@@ -9,29 +9,31 @@ src/
 ├── modules/
 │   └── db/                     # 再利用モジュール（他プロジェクトへコピー可）
 │       ├── config/
-│       │   ├── db-config.js           # 設定 → Sequelize オプション変換
-│       │   └── env-config-provider.js # .env から設定取得
-│       ├── connection.js       # 接続生成・接続管理（connect 含む）
-│       └── index.js            # 公開 API
+│       ├── sample/             # Sequelize 学習用サンプル（README 参照）
+│       ├── connection.js
+│       └── index.js
 ├── models/
-│   ├── tables/                 # テーブル定義（Sequelize define）
+│   ├── tables/
 │   │   └── user.js
-│   └── user-model.js           # 業務処理
-├── demo.js                     # 取得・更新デモ
-├── create-demo.js              # 作成デモ
-├── setup-db.js                 # DB作成
-└── test-db.js                  # 接続確認
+│   └── user-model.js
 ```
+
+サンプルの詳細は [src/modules/db/sample/README.md](src/modules/db/sample/README.md) を参照してください。
 
 ## 使い方
 
 ```bash
 npm install
 copy .env.example .env
-npm run setup:db
-npm run test:db
-npm run demo:create   # レコード作成
-npm run demo          # 取得・更新・全件表示
+npm run sample:setup-database
+npm run sample:test-connection
+npm run sample:sync-table
+npm run sample:create-user
+npm run sample:create-users
+npm run sample:find-user
+npm run sample:find-users
+npm run sample:update-user
+npm run sample:delete-user
 ```
 
 ## DB 接続

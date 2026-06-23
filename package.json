@@ -3,12 +3,17 @@
   "version": "1.0.0",
   "description": "Node.js Sequelize + MSSQL connection module",
   "type": "module",
-  "main": "src/demo.js",
+  "main": "src/modules/db/sample/find/find-user.js",
   "scripts": {
-    "setup:db": "node src/setup-db.js",
-    "test:db": "node src/test-db.js",
-    "demo": "node src/demo.js",
-    "demo:create": "node src/create-demo.js"
+    "sample:setup-database": "node src/modules/db/sample/setup/setup-database.js",
+    "sample:test-connection": "node src/modules/db/sample/connect/test-connection.js",
+    "sample:sync-table": "node src/modules/db/sample/sync/sync-table.js",
+    "sample:create-user": "node src/modules/db/sample/create/create-user.js",
+    "sample:create-users": "node src/modules/db/sample/create/create-users.js",
+    "sample:find-user": "node src/modules/db/sample/find/find-user.js",
+    "sample:find-users": "node src/modules/db/sample/find/find-users.js",
+    "sample:update-user": "node src/modules/db/sample/update/update-user.js",
+    "sample:delete-user": "node src/modules/db/sample/delete/delete-user.js"
   },
   "license": "ISC",
   "dependencies": {

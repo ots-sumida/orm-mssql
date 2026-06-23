@@ -172,7 +172,13 @@ await User.findAll({
 | `models/user-model.js` → `runUserDemo` | `findOne`, `update`, `findAll` |
 | `modules/db/connection.js` | `authenticate`, `query`, `close` |
 | `modules/db/connection.js` → `connect()` | env 取得 → connection 生成 |
-| `demo.js` | `sync` |
+| `modules/db/sample/create/create-user.js` | `create` |
+| `modules/db/sample/create/create-users.js` | `bulkCreate` |
+| `modules/db/sample/find/find-user.js` | `findOne`, `findByPk` |
+| `modules/db/sample/find/find-users.js` | `findAll` |
+| `modules/db/sample/update/update-user.js` | `update` |
+| `modules/db/sample/delete/delete-user.js` | `destroy` |
+| `modules/db/sample/sync/sync-table.js` | `sync` |
 
 ---
 
