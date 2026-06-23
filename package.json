@@ -1,0 +1,19 @@
+{
+  "name": "orm-mssql",
+  "version": "1.0.0",
+  "description": "Node.js Sequelize + MSSQL connection module",
+  "type": "module",
+  "main": "src/demo.js",
+  "scripts": {
+    "setup:db": "node src/setup-db.js",
+    "test:db": "node src/test-db.js",
+    "demo": "node src/demo.js",
+    "demo:create": "node src/create-demo.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "sequelize": "^6.37.8",
+    "tedious": "^19.2.1"
+  }
+}
