@@ -24,7 +24,8 @@ src/
 
 ```bash
 npm install
-copy .env.example .env
+copy .env.dist .env
+npm test                  # Step 2: プール・タイムアウト・リトライのテスト
 npm run sample:setup-database
 npm run sample:test-connection
 npm run sample:sync-table

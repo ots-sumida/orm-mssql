@@ -5,6 +5,9 @@
   "type": "module",
   "main": "src/modules/db/sample/find/find-user.js",
   "scripts": {
+    "test": "node --test src/modules/db/test/*.test.js",
+    "test:db-config": "node --test src/modules/db/test/db-config.test.js",
+    "test:db-connection": "node --test src/modules/db/test/connection.test.js",
     "sample:setup-database": "node src/modules/db/sample/setup/setup-database.js",
     "sample:test-connection": "node src/modules/db/sample/connect/test-connection.js",
     "sample:sync-table": "node src/modules/db/sample/sync/sync-table.js",
