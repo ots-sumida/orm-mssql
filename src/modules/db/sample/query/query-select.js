@@ -1,10 +1,7 @@
-import { connect } from '../../index.js';
+import { withDb } from '../../index.js';
 
-const db = connect();
-
-async function main() {
-  try {
-    await db.testConnection();
+try {
+  await withDb(async (db) => {
     console.log('接続成功\n');
 
     // sequelize.query() - 生 SQL（SELECT）
@@ -21,13 +18,9 @@ async function main() {
     if (rows.length === 0) {
       console.log('（0件）先に create/create-user を実行してください。');
     }
-  } catch (error) {
-    console.error('処理に失敗しました。');
-    console.error(error.message);
-    process.exitCode = 1;
-  } finally {
-    await db.close();
-  }
+  });
+} catch (error) {
+  console.error('処理に失敗しました。');
+  console.error(error.message);
+  process.exitCode = 1;
 }
-
-main();

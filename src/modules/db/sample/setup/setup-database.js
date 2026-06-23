@@ -1,9 +1,9 @@
-import { connect } from '../../index.js';
-
-const db = connect();
+import { withDb } from '../../index.js';
 
 try {
-  await db.createDatabaseIfNotExists();
+  await withDb(async (db) => {
+    await db.createDatabaseIfNotExists();
+  });
 } catch (error) {
   console.error('データベース作成に失敗しました。');
   console.error(error.message);

@@ -22,7 +22,8 @@ src/
 │       │   └── env-config-provider.js  # .env から設定取得
 │       ├── test/                   # 接続設定のテスト
 │       ├── sample/                 # Sequelize 学習用サンプル
-│       ├── connection.js           # 接続生成・connect()
+│       ├── connection.js           # 接続生成・connect()・ensureConnected()
+│       ├── auto-connect.js         # withDb / registerGracefulShutdown
 │       └── index.js                # 公開 API
 └── models/                         # このアプリ固有
     ├── tables/
@@ -55,18 +56,47 @@ createUser / createSampleUsers / runUserDemo
 
 ### 公開 API
 
+**ワンショットスクリプト（推奨）**
+
 ```javascript
-import { connect } from './modules/db/index.js';
+import { withDb } from './modules/db/index.js';
+
+await withDb(async (db) => {
+  // ensureConnected 済み。Sequelize 操作はここに書く
+  await db.sequelize.query('SELECT 1');
+});
+// 処理後は自動 disconnect
+```
+
+**長時間稼働アプリ**
+
+```javascript
+import { connect, registerGracefulShutdown } from './modules/db/index.js';
+
+const db = connect();
+registerGracefulShutdown(db);
+// SIGINT / SIGTERM で自動 close
+```
+
+**手動接続（接続確認サンプル用）**
+
+```javascript
+import { connect, disconnect } from './modules/db/index.js';
 
 const db = connect();
 await db.testConnection();
 // ...
-await db.close();
+await disconnect();
 ```
 
 | 関数 | 役割 |
 |------|------|
 | `connect()` | `.env` から設定を読み、共有 DB 接続を返す |
+| `ensureConnected()` | 接続を確立（初回のみ authenticate、以降は再利用） |
+| `withDb(fn)` | 接続確認 → 処理 → 切断をまとめて実行 |
+| `getSequelize()` | 共有 Sequelize インスタンスを返す |
+| `disconnect()` | 共有接続を閉じてシングルトンをリセット |
+| `registerGracefulShutdown(db)` | プロセス終了時に自動 close |
 | `createConnectionManager(dbConfig)` | DbConfig を渡して接続を生成 |
 | `loadDbConfigFromEnv()` | `.env` から DbConfig を取得 |
 
@@ -128,9 +158,10 @@ copy .env.dist .env
 ## テスト
 
 ```bash
-npm test                  # 全部（17 件）
+npm test                  # 全部
 npm run test:db-config    # 単体（プール・タイムアウト・リトライ設定）
 npm run test:db-connection # 統合（接続・並列クエリ・requestTimeout）
+npm run test:auto-connect # 自動接続（ensureConnected / withDb）
 ```
 
 ## サンプル実行（初めて触る人向け）
@@ -159,6 +190,6 @@ npm run sample:delete-user
 |------|------|------|
 | 1 | 設定分離 + フォルダ構成 | ✅ |
 | 2 | プール・タイムアウト・リトライ無効 | ✅ |
-| 3 | 自動接続パターン | 未着手 |
+| 3 | 自動接続パターン | ✅ |
 | 4 | Docker + 誰でも試せる環境 | 未着手 |
 | 5 | 並列デモ、コンマ区切り、Key Vault | 未着手 |

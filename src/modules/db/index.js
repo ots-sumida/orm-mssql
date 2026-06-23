@@ -5,4 +5,10 @@ export {
   createConnectionManager,
   createConnectionFromEnv,
   connect,
+  disconnect,
 } from './connection.js';
+export {
+  getSequelize,
+  registerGracefulShutdown,
+  withDb,
+} from './auto-connect.js';

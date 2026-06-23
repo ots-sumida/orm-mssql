@@ -21,13 +21,28 @@ export function createSequelize(dbConfig, database = dbConfig.database) {
  */
 export function createConnectionManager(dbConfig) {
   const sequelize = createSequelize(dbConfig);
+  /** @type {Promise<void> | null} */
+  let ensureConnectedPromise = null;
 
   return {
     sequelize,
     dbConfig,
 
+    /**
+     * 接続を確立する（初回のみ authenticate、以降は同じ Promise を再利用）。
+     */
+    async ensureConnected() {
+      if (!ensureConnectedPromise) {
+        ensureConnectedPromise = sequelize.authenticate().catch((error) => {
+          ensureConnectedPromise = null;
+          throw error;
+        });
+      }
+      await ensureConnectedPromise;
+    },
+
     async testConnection() {
-      await sequelize.authenticate();
+      await this.ensureConnected();
     },
 
     async createDatabaseIfNotExists() {
@@ -55,6 +70,7 @@ export function createConnectionManager(dbConfig) {
     },
 
     async close() {
+      ensureConnectedPromise = null;
       await sequelize.close();
     },
   };
@@ -83,4 +99,17 @@ export function connect(env = process.env) {
     sharedConnection = createConnectionFromEnv(env);
   }
   return sharedConnection;
+}
+
+/**
+ * 共有接続を閉じてシングルトンをリセットする。
+ */
+export async function disconnect() {
+  if (!sharedConnection) {
+    return;
+  }
+
+  const db = sharedConnection;
+  sharedConnection = null;
+  await db.close();
 }

@@ -1,11 +1,8 @@
-import { connect } from '../../index.js';
+import { withDb } from '../../index.js';
 import { User } from '../../../../models/tables/user.js';
 
-const db = connect();
-
-async function main() {
-  try {
-    await db.testConnection();
+try {
+  await withDb(async (db) => {
     console.log('接続成功\n');
 
     await User.sync();
@@ -20,13 +17,9 @@ async function main() {
     for (const user of users) {
       console.log(`  id=${user.id}, name=${user.name}, email=${user.email}`);
     }
-  } catch (error) {
-    console.error('処理に失敗しました。');
-    console.error(error.message);
-    process.exitCode = 1;
-  } finally {
-    await db.close();
-  }
+  });
+} catch (error) {
+  console.error('処理に失敗しました。');
+  console.error(error.message);
+  process.exitCode = 1;
 }
-
-main();

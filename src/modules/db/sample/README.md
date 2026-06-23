@@ -1,7 +1,7 @@
 # Sequelize サンプル
 
 Sequelize を初めて触る人向けの実行サンプルです。  
-各ファイルに接続・sync・close の処理をそのまま書いてあるので、1ファイルだけ開いて実行・読み比べできます。
+CRUD サンプルは `withDb()` で接続・切断を自動化しています。手動接続の例は `connect/test-connection.js` を参照してください。
 
 ## フォルダ構成
 
@@ -39,7 +39,8 @@ npm run sample:delete-user
 | ファイル | 学べる API | npm コマンド |
 |----------|-----------|--------------|
 | `setup/setup-database.js` | `createDatabaseIfNotExists()` | `sample:setup-database` |
-| `connect/test-connection.js` | `testConnection()` | `sample:test-connection` |
+| `connect/test-connection.js` | `testConnection()`（手動接続） | `sample:test-connection` |
+| `connect/with-db.js` | `withDb()`（自動接続） | `sample:with-db` |
 | `sync/sync-table.js` | `User.sync()` | `sample:sync-table` |
 | `sync/sync-force-table.js` | `User.sync({ force: true })` | `sample:sync-force-table` |
 
