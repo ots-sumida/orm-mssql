@@ -24,6 +24,8 @@ src/
 │       ├── sample/                 # Sequelize 学習用サンプル
 │       ├── connection.js           # 接続生成・connect()・ensureConnected()
 │       ├── auto-connect.js         # withDb / registerGracefulShutdown
+│       ├── format/
+│       │   └── csv-format.js       # コンマ区切り返却ユーティリティ
 │       └── index.js                # 公開 API
 └── models/                         # このアプリ固有
     ├── tables/
@@ -99,6 +101,38 @@ await disconnect();
 | `registerGracefulShutdown(db)` | プロセス終了時に自動 close |
 | `createConnectionManager(dbConfig)` | DbConfig を渡して接続を生成 |
 | `loadDbConfigFromEnv()` | `.env` から DbConfig を取得 |
+| `formatRowAsCsv(row, columns)` | 1行をコンマ区切り文字列に変換 |
+| `formatRowsAsCsv(rows, columns, options)` | 複数行をコンマ区切り文字列に変換 |
+
+### コンマ区切り返却
+
+```javascript
+import { formatRowAsCsv, formatRowsAsCsv } from './modules/db/index.js';
+
+const row = { id: 1, name: '山田太郎', email: 'taro@example.com' };
+formatRowAsCsv(row, ['id', 'name', 'email']);
+// => "1,山田太郎,taro@example.com"
+
+formatRowsAsCsv([row], ['id', 'name', 'email'], { header: true });
+// => "id,name,email\n1,山田太郎,taro@example.com"
+```
+
+カンマ・ダブルクォートを含む値は自動エスケープします。
+
+### 並列処理
+
+コネクションプール（`pool.max`）経由で `Promise.all` による並列クエリが可能です。  
+同時実行数が `pool.max` を超えると、空き接続が出るまで `pool.acquire`（デフォルト 30 秒）待ちします。
+
+```javascript
+await Promise.all([
+  User.findByPk(1),
+  User.findByPk(2),
+  User.findByPk(3),
+]);
+```
+
+サンプル: `npm run sample:find-users-parallel`
 
 ### 接続設定（Step 2 済）
 
@@ -128,6 +162,8 @@ await disconnect();
 - `withTransaction()` で commit / rollback を管理
 - `createUser()` は `{ transaction }` オプション対応
 - `createSampleUsers()` は複数作成を 1 トランザクションで実行
+- `findUsersByIdsParallel(ids)` — `Promise.all` で並列取得
+- `listAllUsersAsCsv()` / `findUserAsCsv(email)` — コンマ区切り返却
 
 ## サンプル（modules/db/sample）
 
@@ -162,6 +198,8 @@ npm test                  # 全部
 npm run test:db-config    # 単体（プール・タイムアウト・リトライ設定）
 npm run test:db-connection # 統合（接続・並列クエリ・requestTimeout）
 npm run test:auto-connect # 自動接続（ensureConnected / withDb）
+npm run test:csv-format   # コンマ区切り（単体）
+npm run test:parallel-csv # 並列取得・CSV 返却（統合）
 ```
 
 ## サンプル実行（初めて触る人向け）
@@ -191,5 +229,6 @@ npm run sample:delete-user
 | 1 | 設定分離 + フォルダ構成 | ✅ |
 | 2 | プール・タイムアウト・リトライ無効 | ✅ |
 | 3 | 自動接続パターン | ✅ |
-| 4 | Docker + 誰でも試せる環境 | 未着手 |
-| 5 | 並列デモ、コンマ区切り、Key Vault | 未着手 |
+| 4 | Docker + 誰でも試せる環境 | スキップ |
+| 5 | 並列デモ、コンマ区切り | ✅ |
+| — | Key Vault プロバイダ | 未着手 |

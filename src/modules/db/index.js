@@ -12,3 +12,4 @@ export {
   registerGracefulShutdown,
   withDb,
 } from './auto-connect.js';
+export { formatRowAsCsv, formatRowsAsCsv } from './format/csv-format.js';

@@ -64,6 +64,8 @@ npm run sample:delete-user
 | `find/find-users-options.js` | `attributes`, `limit`, `offset`, `raw` | `sample:find-users-options` |
 | `find/find-users-count.js` | `count`, `findAndCountAll` | `sample:find-users-count` |
 | `find/find-users-aggregate.js` | `max`, `min`, `sum` | `sample:find-users-aggregate` |
+| `find/find-users-parallel.js` | `Promise.all` 並列取得 | `sample:find-users-parallel` |
+| `find/find-users-csv.js` | `formatRowAsCsv`, `formatRowsAsCsv` | `sample:find-users-csv` |
 
 ### update / delete
 

@@ -1,4 +1,7 @@
 import { User } from './tables/user.js';
+import { formatRowAsCsv, formatRowsAsCsv } from '../modules/db/format/csv-format.js';
+
+const USER_CSV_COLUMNS = ['id', 'name', 'email'];
 
 /**
  * トランザクション内で処理を実行し、成功時 commit・失敗時 rollback する。
@@ -76,3 +79,48 @@ export async function runUserDemo() {
 }
 
 export { withTransaction };
+
+/**
+ * 複数 ID をプール経由で並列取得する。
+ *
+ * @param {number[]} ids
+ */
+export async function findUsersByIdsParallel(ids) {
+  const results = await Promise.all(
+    ids.map((id) => User.findByPk(id)),
+  );
+  return results.filter(Boolean);
+}
+
+/**
+ * 全ユーザーをコンマ区切り文字列で返す。
+ *
+ * @param {{ header?: boolean }} [options]
+ * @returns {Promise<string>}
+ */
+export async function listAllUsersAsCsv({ header = true } = {}) {
+  const users = await User.findAll({
+    order: [['id', 'ASC']],
+    raw: true,
+  });
+  return formatRowsAsCsv(users, USER_CSV_COLUMNS, { header });
+}
+
+/**
+ * 1ユーザーをコンマ区切り文字列で返す。
+ *
+ * @param {string} email
+ * @returns {Promise<string | null>}
+ */
+export async function findUserAsCsv(email) {
+  const user = await User.findOne({
+    where: { email },
+    raw: true,
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  return formatRowAsCsv(user, USER_CSV_COLUMNS);
+}
