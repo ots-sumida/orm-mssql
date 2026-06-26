@@ -1,13 +1,13 @@
-import { withDb } from '../../db.js';
+import { withDb } from '../../index.js';
 import { User } from '../../../../models/tables/user.js';
 
 try {
   await withDb(async (db) => {
-    console.log('接続�E功\n');
+    console.log('接続成功\n');
 
     await User.sync();
 
-    // attributes - 取得する�Eを指宁E
+    // attributes - 取得する列を指定
     const partial = await User.findAll({
       attributes: ['id', 'name'],
       order: [['id', 'ASC']],
@@ -19,7 +19,7 @@ try {
     console.log('attributes + limit + offset + raw:');
     console.log(partial);
 
-    // order - 並び替ぁE
+    // order - 並び替え
     const ordered = await User.findAll({
       attributes: ['id', 'email'],
       order: [['email', 'DESC']],
@@ -32,7 +32,7 @@ try {
     }
   });
 } catch (error) {
-  console.error('処琁E��失敗しました、E);
+  console.error('処理に失敗しました。');
   console.error(error.message);
   process.exitCode = 1;
 }

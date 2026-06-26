@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { withDb } from '../../db.js';
+import { withDb } from '../../index.js';
 import { User } from '../../../../models/tables/user.js';
 
 try {
