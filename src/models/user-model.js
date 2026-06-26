@@ -1,5 +1,5 @@
 import { User } from './tables/user.js';
-import { formatRowAsCsv, formatRowsAsCsv } from '../modules/db/format/csv-format.js';
+import { formatRowAsCsv, formatRowsAsCsv } from '../modules/db/db.js';
 
 const USER_CSV_COLUMNS = ['id', 'name', 'email'];
 

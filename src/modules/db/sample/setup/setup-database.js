@@ -1,4 +1,4 @@
-import { withDb } from '../../index.js';
+import { withDb } from '../../db.js';
 
 try {
   await withDb(async (db) => {
