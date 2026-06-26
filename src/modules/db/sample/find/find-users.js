@@ -1,13 +1,13 @@
-import { withDb } from '../../index.js';
+import { withDb } from '../../db.js';
 import { User } from '../../../../models/tables/user.js';
 
 try {
   await withDb(async (db) => {
-    console.log('接続成功\n');
+    console.log('接続�E功\n');
 
     await User.sync();
 
-    // User.findAll() - 全件取得
+    // User.findAll() - 全件取征E
     const users = await User.findAll({
       order: [['id', 'ASC']],
     });
@@ -18,7 +18,7 @@ try {
     }
   });
 } catch (error) {
-  console.error('処理に失敗しました。');
+  console.error('処琁E��失敗しました、E);
   console.error(error.message);
   process.exitCode = 1;
 }

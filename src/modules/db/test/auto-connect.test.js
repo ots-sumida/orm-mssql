@@ -7,7 +7,7 @@ import {
   createConnectionManager,
   withDb,
   getSequelize,
-} from '../index.js';
+} from '../db.js';
 import { loadDbConfigFromEnv } from '../../config/providers/env-config-provider.js';
 
 dotenv.config();

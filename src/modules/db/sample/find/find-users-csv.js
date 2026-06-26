@@ -1,4 +1,4 @@
-import { withDb } from '../../index.js';
+import { withDb } from '../../db.js';
 import { formatRowAsCsv, formatRowsAsCsv } from '../../format/csv-format.js';
 import { User } from '../../../../models/tables/user.js';
 

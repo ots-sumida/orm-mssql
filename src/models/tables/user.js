@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { connect } from '../../modules/db/index.js';
+import { connect } from '../../modules/db/db.js';
 
 const { sequelize } = connect();
 

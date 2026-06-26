@@ -4,7 +4,7 @@
 
 ```javascript
 import { User } from '../models/tables/user.js';
-import { connect } from '../modules/db/index.js';
+import { connect } from '../modules/db/db.js';
 
 const { sequelize } = connect();
 ```

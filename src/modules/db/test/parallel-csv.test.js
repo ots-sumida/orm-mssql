@@ -1,7 +1,7 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import dotenv from 'dotenv';
-import { connect, disconnect } from '../index.js';
+import { connect, disconnect } from '../db.js';
 import { User } from '../../../models/tables/user.js';
 import {
   findUsersByIdsParallel,
