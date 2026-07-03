@@ -25,6 +25,7 @@ export function loadDbConfigFromEnv(env = process.env) {
     DB_POOL_IDLE,
     DB_CONNECT_TIMEOUT,
     DB_REQUEST_TIMEOUT,
+    DB_LOGGING = 'false',
   } = env;
 
   assertValid(requireAllNonEmpty(
@@ -47,5 +48,6 @@ export function loadDbConfigFromEnv(env = process.env) {
     poolIdle: parseInteger(DB_POOL_IDLE, defaultDbOptions.poolIdle),
     connectTimeout: parseInteger(DB_CONNECT_TIMEOUT, defaultDbOptions.connectTimeout),
     requestTimeout: parseInteger(DB_REQUEST_TIMEOUT, defaultDbOptions.requestTimeout),
+    logging: parseBoolean(DB_LOGGING, false),
   };
 }

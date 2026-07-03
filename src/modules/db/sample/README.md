@@ -87,3 +87,11 @@ npm run sample:delete-user
 - `sync-force-table.js` / `truncate-users.js` は**データが消えます**（開発環境のみ）
 - CRUD サンプルは `models/tables/user.js` の `User` モデルを使います（このアプリ固有）
 - `.env` に接続情報が設定されていること
+
+## SQL ログ
+
+`npm run sample:*` 実行時、Sequelize が発行した SQL が `[SQL]` プレフィックス付きでコンソールに出力されます。
+
+- サンプルは `.env` で `DB_LOGGING` が未設定のとき自動的に有効
+- 明示的に無効にする: `.env` に `DB_LOGGING=false`
+- サンプル以外（アプリ本体・テスト）で有効にする: `.env` に `DB_LOGGING=true`

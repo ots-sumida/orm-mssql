@@ -15,6 +15,7 @@ import { parseBoolean, parseInteger } from '../../validation/common/well-used-va
  * @property {number} poolIdle
  * @property {number} connectTimeout
  * @property {number} requestTimeout
+ * @property {boolean} logging
  */
 
 export { parseBoolean, parseInteger };
@@ -28,6 +29,21 @@ export const defaultDbOptions = {
   connectTimeout: 15000,
   requestTimeout: 60000,
 };
+
+/**
+ * @param {boolean} enabled
+ * @returns {false | ((sql: string, timing?: number) => void)}
+ */
+export function resolveSequelizeLogging(enabled) {
+  if (!enabled) {
+    return false;
+  }
+
+  return (sql, timing) => {
+    const suffix = typeof timing === 'number' ? ` (${timing}ms)` : '';
+    console.log(`[SQL]${suffix} ${sql}`);
+  };
+}
 
 /**
  * @param {DbConfig} dbConfig
@@ -55,6 +71,6 @@ export function buildSequelizeOptions(dbConfig) {
     retry: {
       max: 0,
     },
-    logging: false,
+    logging: resolveSequelizeLogging(dbConfig.logging),
   };
 }

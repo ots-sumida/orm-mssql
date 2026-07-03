@@ -5,6 +5,7 @@ import {
   defaultDbOptions,
   parseBoolean,
   parseInteger,
+  resolveSequelizeLogging,
 } from '../../config/client/sqlsv-client-config.js';
 import { loadDbConfigFromEnv } from '../../config/providers/env-config-provider.js';
 
@@ -16,6 +17,7 @@ const baseConfig = {
   password: 'secret',
   encrypt: false,
   trustServerCertificate: true,
+  logging: false,
   ...defaultDbOptions,
 };
 
@@ -78,6 +80,41 @@ describe('buildSequelizeOptions', () => {
     const options = buildSequelizeOptions(baseConfig);
     assert.deepEqual(options.retry, { max: 0 });
   });
+
+  it('logging=false のとき Sequelize logging は無効', () => {
+    const options = buildSequelizeOptions({ ...baseConfig, logging: false });
+    assert.equal(options.logging, false);
+  });
+
+  it('logging=true のとき Sequelize logging は関数', () => {
+    const options = buildSequelizeOptions({ ...baseConfig, logging: true });
+    assert.equal(typeof options.logging, 'function');
+  });
+});
+
+describe('resolveSequelizeLogging', () => {
+  it('無効時は false を返す', () => {
+    assert.equal(resolveSequelizeLogging(false), false);
+  });
+
+  it('有効時は SQL を [SQL] プレフィックス付きで出力する', () => {
+    const logs = [];
+    const originalLog = console.log;
+    console.log = (...args) => logs.push(args.join(' '));
+
+    try {
+      const logger = resolveSequelizeLogging(true);
+      logger('SELECT 1', 12);
+      assert.equal(logs.length, 1);
+      assert.match(logs[0], /^\[SQL\] \(12ms\) SELECT 1$/);
+
+      logger('SELECT 2', { plain: true });
+      assert.equal(logs.length, 2);
+      assert.match(logs[1], /^\[SQL\] SELECT 2$/);
+    } finally {
+      console.log = originalLog;
+    }
+  });
 });
 
 describe('loadDbConfigFromEnv', () => {
@@ -97,6 +134,27 @@ describe('loadDbConfigFromEnv', () => {
     assert.equal(config.connectTimeout, 12000);
     assert.equal(config.requestTimeout, 90000);
     assert.equal(config.poolMin, defaultDbOptions.poolMin);
+  });
+
+  it('DB_LOGGING を読み込む', () => {
+    const enabled = loadDbConfigFromEnv({
+      DB_HOST: 'db-host',
+      DB_PORT: '1433',
+      DB_NAME: 'mydb',
+      DB_USER: 'user',
+      DB_PASSWORD: 'pass',
+      DB_LOGGING: 'true',
+    });
+    assert.equal(enabled.logging, true);
+
+    const disabled = loadDbConfigFromEnv({
+      DB_HOST: 'db-host',
+      DB_PORT: '1433',
+      DB_NAME: 'mydb',
+      DB_USER: 'user',
+      DB_PASSWORD: 'pass',
+    });
+    assert.equal(disabled.logging, false);
   });
 
   it('必須項目が欠けているとエラー', () => {
