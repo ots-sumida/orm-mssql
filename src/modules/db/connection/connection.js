@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import { buildSequelizeOptions } from '../../config/client/sqlsv-client-config.js';
+import { buildSequelizeOptions, attachSqlDebugLogging } from '../../config/client/sqlsv-client-config.js';
 import { extractDbConfigFromEnv } from '../../config/extractor/config-extractor.js';
 import { assertSqlParamsMatch } from '../../validation/sql/param-checker.js';
 
@@ -9,12 +9,18 @@ import { assertSqlParamsMatch } from '../../validation/sql/param-checker.js';
  * @returns {Sequelize}
  */
 export function createSequelize(dbConfig, database = dbConfig.database) {
-  return new Sequelize(
+  const sequelize = new Sequelize(
     database,
     dbConfig.user,
     dbConfig.password,
     buildSequelizeOptions(dbConfig),
   );
+
+  if (dbConfig.logging) {
+    attachSqlDebugLogging(sequelize);
+  }
+
+  return sequelize;
 }
 
 /**

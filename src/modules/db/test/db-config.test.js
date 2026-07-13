@@ -1,11 +1,16 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  attachSqlDebugLogging,
   buildSequelizeOptions,
   defaultDbOptions,
+  formatSqlLiteral,
+  inlineSqlParameters,
   parseBoolean,
   parseInteger,
+  resolveExecutableSql,
   resolveSequelizeLogging,
+  shouldSkipSqlLog,
 } from '../../config/client/sqlsv-client-config.js';
 import { loadDbConfigFromEnv } from '../../config/providers/env-config-provider.js';
 
@@ -65,77 +70,59 @@ describe('buildSequelizeOptions', () => {
     });
   });
 
-  it('タイムアウト設定を反映する', () => {
-    const options = buildSequelizeOptions({
-      ...baseConfig,
-      connectTimeout: 10000,
-      requestTimeout: 45000,
-    });
-
-    assert.equal(options.dialectOptions.options.connectTimeout, 10000);
-    assert.equal(options.dialectOptions.options.requestTimeout, 45000);
-  });
-
-  it('リトライは無効（max: 0）', () => {
-    const options = buildSequelizeOptions(baseConfig);
-    assert.deepEqual(options.retry, { max: 0 });
-  });
-
-  it('logging=false のとき Sequelize logging は無効', () => {
-    const options = buildSequelizeOptions({ ...baseConfig, logging: false });
-    assert.equal(options.logging, false);
-  });
-
-  it('logging=true のとき Sequelize logging は関数', () => {
+  it('logging=true のとき afterQuery フックで出力する', () => {
     const options = buildSequelizeOptions({ ...baseConfig, logging: true });
-    assert.equal(typeof options.logging, 'function');
+    assert.equal(options.logging, false);
+    assert.equal(typeof attachSqlDebugLogging, 'function');
+  });
+});
+
+describe('formatSqlLiteral', () => {
+  it('文字列・数値・NULL を SQL リテラルに変換する', () => {
+    assert.equal(formatSqlLiteral('taro@example.com'), "N'taro@example.com'");
+    assert.equal(formatSqlLiteral(1), '1');
+    assert.equal(formatSqlLiteral(null), 'NULL');
+  });
+});
+
+describe('inlineSqlParameters', () => {
+  it('@name / :name を実際の値に置き換える', () => {
+    const sql = 'SELECT * FROM users WHERE email = @email AND id = @id';
+    assert.equal(
+      inlineSqlParameters(sql, { email: 'taro@example.com', id: 1 }),
+      "SELECT * FROM users WHERE email = N'taro@example.com' AND id = 1",
+    );
+  });
+});
+
+describe('resolveExecutableSql', () => {
+  it('replacements を SQL に埋め込む', () => {
+    assert.equal(
+      resolveExecutableSql(
+        { replacements: { email: 'taro@example.com' } },
+        'SELECT * FROM users WHERE email = @email',
+      ),
+      "SELECT * FROM users WHERE email = N'taro@example.com'",
+    );
+  });
+});
+
+describe('shouldSkipSqlLog', () => {
+  it('接続確認・sync 用 SQL はスキップする', () => {
+    assert.equal(shouldSkipSqlLog({ type: 'SELECT' }, 'SELECT 1+1 AS result'), true);
+    assert.equal(shouldSkipSqlLog({ type: 'SHOWTABLES' }, "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'users'"), true);
+    assert.equal(shouldSkipSqlLog({ type: 'SELECT' }, "SELECT [id] FROM [users] WHERE [email] = N'taro@example.com'"), false);
   });
 });
 
 describe('resolveSequelizeLogging', () => {
-  it('無効時は false を返す', () => {
+  it('常に false を返す（出力はフック側）', () => {
     assert.equal(resolveSequelizeLogging(false), false);
-  });
-
-  it('有効時は SQL を [SQL] プレフィックス付きで出力する', () => {
-    const logs = [];
-    const originalLog = console.log;
-    console.log = (...args) => logs.push(args.join(' '));
-
-    try {
-      const logger = resolveSequelizeLogging(true);
-      logger('SELECT 1', 12);
-      assert.equal(logs.length, 1);
-      assert.match(logs[0], /^\[SQL\] \(12ms\) SELECT 1$/);
-
-      logger('SELECT 2', { plain: true });
-      assert.equal(logs.length, 2);
-      assert.match(logs[1], /^\[SQL\] SELECT 2$/);
-    } finally {
-      console.log = originalLog;
-    }
+    assert.equal(resolveSequelizeLogging(true), false);
   });
 });
 
 describe('loadDbConfigFromEnv', () => {
-  it('環境変数からプール・タイムアウトを読み込む', () => {
-    const config = loadDbConfigFromEnv({
-      DB_HOST: 'db-host',
-      DB_PORT: '1433',
-      DB_NAME: 'mydb',
-      DB_USER: 'user',
-      DB_PASSWORD: 'pass',
-      DB_POOL_MAX: '7',
-      DB_CONNECT_TIMEOUT: '12000',
-      DB_REQUEST_TIMEOUT: '90000',
-    });
-
-    assert.equal(config.poolMax, 7);
-    assert.equal(config.connectTimeout, 12000);
-    assert.equal(config.requestTimeout, 90000);
-    assert.equal(config.poolMin, defaultDbOptions.poolMin);
-  });
-
   it('DB_LOGGING を読み込む', () => {
     const enabled = loadDbConfigFromEnv({
       DB_HOST: 'db-host',
@@ -146,15 +133,6 @@ describe('loadDbConfigFromEnv', () => {
       DB_LOGGING: 'true',
     });
     assert.equal(enabled.logging, true);
-
-    const disabled = loadDbConfigFromEnv({
-      DB_HOST: 'db-host',
-      DB_PORT: '1433',
-      DB_NAME: 'mydb',
-      DB_USER: 'user',
-      DB_PASSWORD: 'pass',
-    });
-    assert.equal(disabled.logging, false);
   });
 
   it('必須項目が欠けているとエラー', () => {

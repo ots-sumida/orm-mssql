@@ -90,7 +90,7 @@ npm run sample:delete-user
 
 ## SQL ログ
 
-`npm run sample:*` 実行時、Sequelize が発行した SQL が `[SQL]` プレフィックス付きでコンソールに出力されます。
+`npm run sample:*` 実行時、アプリが投げた SQL だけが `[SQL]` 付きで出力されます（接続確認・sync 内部 SQL は除外）。
 
 - サンプルは `.env` で `DB_LOGGING` が未設定のとき自動的に有効
 - 明示的に無効にする: `.env` に `DB_LOGGING=false`
