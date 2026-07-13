@@ -1,15 +1,14 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import {
-  ValidationError,
+'use strict';
+
+const { describe, it } = require('node:test');
+const assert = require('node:assert/strict');
+const { ValidationError,
   assertValid,
   collectErrors,
   parseBoolean,
   parseInteger,
   requireAllNonEmpty,
-  requireNonEmptyString,
-} from '../common/well-used-validation.js';
-
+  requireNonEmptyString, } = require('../common/well-used-validation');
 describe('requireNonEmptyString', () => {
   it('未設定のときメッセージを返す', () => {
     assert.equal(requireNonEmptyString('', 'DB_HOST'), 'DB_HOST が未設定です');

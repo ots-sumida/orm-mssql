@@ -1,14 +1,13 @@
-import { describe, it, before, after } from 'node:test';
-import assert from 'node:assert/strict';
-import dotenv from 'dotenv';
-import { connect, disconnect } from '../db.js';
-import { User } from '../../../models/tables/user.js';
-import {
-  findUsersByIdsParallel,
-  listAllUsersAsCsv,
-  findUserAsCsv,
-} from '../../../models/user-model.js';
+'use strict';
 
+const { describe, it, before, after } = require('node:test');
+const assert = require('node:assert/strict');
+const dotenv = require('dotenv');
+const { connect, disconnect } = require('../db');
+const { User } = require('../../../models/tables/user');
+const { findUsersByIdsParallel,
+  listAllUsersAsCsv,
+  findUserAsCsv, } = require('../../../models/user-model');
 dotenv.config();
 
 function hasDbEnv() {

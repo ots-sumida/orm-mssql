@@ -1,7 +1,8 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import {
-  attachSqlDebugLogging,
+'use strict';
+
+const { describe, it } = require('node:test');
+const assert = require('node:assert/strict');
+const { attachSqlDebugLogging,
   buildSequelizeOptions,
   defaultDbOptions,
   formatSqlLiteral,
@@ -10,10 +11,8 @@ import {
   parseInteger,
   resolveExecutableSql,
   resolveSequelizeLogging,
-  shouldSkipSqlLog,
-} from '../../config/client/sqlsv-client-config.js';
-import { loadDbConfigFromEnv } from '../../config/providers/env-config-provider.js';
-
+  shouldSkipSqlLog, } = require('../../config/client/sqlsv-client-config');
+const { loadDbConfigFromEnv } = require('../../config/providers/env-config-provider');
 const baseConfig = {
   host: 'localhost',
   port: 1433,

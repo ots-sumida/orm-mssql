@@ -1,5 +1,6 @@
-import dotenv from 'dotenv';
+'use strict';
 
+const dotenv = require('dotenv');
 /**
  * サンプルスクリプト用プリロード。
  * .env で DB_LOGGING が未設定のときのみ true にする。

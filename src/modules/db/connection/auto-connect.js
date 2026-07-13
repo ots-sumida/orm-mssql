@@ -1,5 +1,6 @@
-import { connect, disconnect } from './connection.js';
+'use strict';
 
+const { connect, disconnect } = require('./connection');
 let shutdownHooksRegistered = false;
 
 /**
@@ -9,7 +10,7 @@ let shutdownHooksRegistered = false;
  * @param {NodeJS.ProcessEnv} [env]
  * @returns {import('sequelize').Sequelize}
  */
-export function getSequelize(env = process.env) {
+function getSequelize(env = process.env) {
   return connect(env).sequelize;
 }
 
@@ -19,7 +20,7 @@ export function getSequelize(env = process.env) {
  *
  * @param {ReturnType<typeof connect>} [db]
  */
-export function registerGracefulShutdown(db) {
+function registerGracefulShutdown(db) {
   if (shutdownHooksRegistered) {
     return;
   }
@@ -48,7 +49,7 @@ export function registerGracefulShutdown(db) {
  * @param {(db: ReturnType<typeof connect>) => Promise<T>} fn
  * @returns {Promise<T>}
  */
-export async function withDb(fn) {
+async function withDb(fn) {
   const db = connect();
 
   try {
@@ -58,3 +59,9 @@ export async function withDb(fn) {
     await disconnect();
   }
 }
+
+module.exports = {
+  getSequelize,
+  registerGracefulShutdown,
+  withDb,
+};

@@ -1,5 +1,6 @@
-import { ValidationError, assertValid, collectErrors } from '../common/well-used-validation.js';
+'use strict';
 
+const { ValidationError, assertValid, collectErrors } = require('../common/well-used-validation');
 const SQL_PARAM_PATTERN = /(?<!:):([a-zA-Z_][a-zA-Z0-9_]*)/g;
 
 /**
@@ -8,7 +9,7 @@ const SQL_PARAM_PATTERN = /(?<!:):([a-zA-Z_][a-zA-Z0-9_]*)/g;
  * @param {string} sql
  * @returns {string[]}
  */
-export function extractSqlParamNames(sql) {
+function extractSqlParamNames(sql) {
   const names = new Set();
   const pattern = new RegExp(SQL_PARAM_PATTERN.source, SQL_PARAM_PATTERN.flags);
 
@@ -27,7 +28,7 @@ export function extractSqlParamNames(sql) {
  * @param {{ allowExtra?: boolean }} [options]
  * @returns {string[]}
  */
-export function validateSqlParams(sql, replacements = {}, { allowExtra = false } = {}) {
+function validateSqlParams(sql, replacements = {}, { allowExtra = false } = {}) {
   const expected = extractSqlParamNames(sql);
   const provided = Object.keys(replacements ?? {});
   const errors = [];
@@ -60,7 +61,7 @@ export function validateSqlParams(sql, replacements = {}, { allowExtra = false }
  * @param {Record<string, unknown> | undefined | null} replacements
  * @param {{ allowExtra?: boolean }} [options]
  */
-export function assertSqlParamsMatch(sql, replacements = {}, options = {}) {
+function assertSqlParamsMatch(sql, replacements = {}, options = {}) {
   assertValid(validateSqlParams(sql, replacements, options));
 }
 
@@ -70,7 +71,7 @@ export function assertSqlParamsMatch(sql, replacements = {}, options = {}) {
  * @param {{ allowExtra?: boolean }} [options]
  * @returns {{ ok: true } | { ok: false, errors: string[] }}
  */
-export function checkSqlParams(sql, replacements = {}, options = {}) {
+function checkSqlParams(sql, replacements = {}, options = {}) {
   const errors = validateSqlParams(sql, replacements, options);
   if (errors.length === 0) {
     return { ok: true };
@@ -78,4 +79,11 @@ export function checkSqlParams(sql, replacements = {}, options = {}) {
   return { ok: false, errors };
 }
 
-export { collectErrors, ValidationError };
+module.exports = {
+  extractSqlParamNames,
+  validateSqlParams,
+  assertSqlParamsMatch,
+  checkSqlParams,
+  collectErrors,
+  ValidationError,
+};

@@ -1,9 +1,10 @@
-import { describe, it, before, after } from 'node:test';
-import assert from 'node:assert/strict';
-import dotenv from 'dotenv';
-import { createConnectionManager, createSequelize } from '../connection/connection.js';
-import { loadDbConfigFromEnv } from '../../config/providers/env-config-provider.js';
+'use strict';
 
+const { describe, it, before, after } = require('node:test');
+const assert = require('node:assert/strict');
+const dotenv = require('dotenv');
+const { createConnectionManager, createSequelize } = require('../connection/connection');
+const { loadDbConfigFromEnv } = require('../../config/providers/env-config-provider');
 dotenv.config();
 
 function hasDbEnv() {

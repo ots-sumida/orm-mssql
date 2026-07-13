@@ -1,11 +1,15 @@
-import { withDb } from '../../db.js';
+'use strict';
 
-try {
-  await withDb(async (db) => {
-    await db.createDatabaseIfNotExists();
-  });
-} catch (error) {
-  console.error('データベース作成に失敗しました。');
-  console.error(error.message);
-  process.exitCode = 1;
-}
+const { withDb } = require('../../db');
+
+(async () => {
+  try {  
+    await withDb(async (db) => {  
+      await db.createDatabaseIfNotExists();  
+    });  
+  } catch (error) {  
+    console.error('データベース作成に失敗しました。');  
+    console.error(error.message);  
+    process.exitCode = 1;  
+  }
+})();

@@ -1,7 +1,8 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { formatRowAsCsv, formatRowsAsCsv } from '../format/csv-format.js';
+'use strict';
 
+const { describe, it } = require('node:test');
+const assert = require('node:assert/strict');
+const { formatRowAsCsv, formatRowsAsCsv } = require('../format/csv-format');
 describe('formatRowAsCsv', () => {
   it('指定列をコンマ区切りで返す', () => {
     const row = { id: 1, name: '山田太郎', email: 'taro@example.com' };

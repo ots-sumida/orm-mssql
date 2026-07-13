@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @param {unknown} value
  * @returns {string}
@@ -34,7 +36,7 @@ function getCellValue(row, column) {
  * @param {string} [separator=',']
  * @returns {string}
  */
-export function formatRowAsCsv(row, columns, separator = ',') {
+function formatRowAsCsv(row, columns, separator = ',') {
   return columns.map((column) => escapeCsvValue(getCellValue(row, column))).join(separator);
 }
 
@@ -46,7 +48,7 @@ export function formatRowAsCsv(row, columns, separator = ',') {
  * @param {{ separator?: string, header?: boolean }} [options]
  * @returns {string}
  */
-export function formatRowsAsCsv(rows, columns, { separator = ',', header = false } = {}) {
+function formatRowsAsCsv(rows, columns, { separator = ',', header = false } = {}) {
   const lines = [];
 
   if (header) {
@@ -59,3 +61,8 @@ export function formatRowsAsCsv(rows, columns, { separator = ',', header = false
 
   return lines.join('\n');
 }
+
+module.exports = {
+  formatRowAsCsv,
+  formatRowsAsCsv,
+};

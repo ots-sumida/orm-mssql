@@ -1,14 +1,15 @@
-import { Sequelize } from 'sequelize';
-import { buildSequelizeOptions, attachSqlDebugLogging } from '../../config/client/sqlsv-client-config.js';
-import { extractDbConfigFromEnv } from '../../config/extractor/config-extractor.js';
-import { assertSqlParamsMatch } from '../../validation/sql/param-checker.js';
+'use strict';
 
+const { Sequelize } = require('sequelize');
+const { buildSequelizeOptions, attachSqlDebugLogging } = require('../../config/client/sqlsv-client-config');
+const { extractDbConfigFromEnv } = require('../../config/extractor/config-extractor');
+const { assertSqlParamsMatch } = require('../../validation/sql/param-checker');
 /**
  * @param {import('../../config/client/sqlsv-client-config.js').DbConfig} dbConfig
  * @param {string} [database]
  * @returns {Sequelize}
  */
-export function createSequelize(dbConfig, database = dbConfig.database) {
+function createSequelize(dbConfig, database = dbConfig.database) {
   const sequelize = new Sequelize(
     database,
     dbConfig.user,
@@ -26,7 +27,7 @@ export function createSequelize(dbConfig, database = dbConfig.database) {
 /**
  * @param {import('../../config/client/sqlsv-client-config.js').DbConfig} dbConfig
  */
-export function createConnectionManager(dbConfig) {
+function createConnectionManager(dbConfig) {
   const sequelize = createSequelize(dbConfig);
   /** @type {Promise<void> | null} */
   let ensureConnectedPromise = null;
@@ -92,7 +93,7 @@ export function createConnectionManager(dbConfig) {
  * @param {NodeJS.ProcessEnv} [env]
  * @returns {ReturnType<typeof createConnectionManager>}
  */
-export function createConnectionFromEnv(env = process.env) {
+function createConnectionFromEnv(env = process.env) {
   return createConnectionManager(extractDbConfigFromEnv(env));
 }
 
@@ -104,7 +105,7 @@ let sharedConnection = null;
  * @param {NodeJS.ProcessEnv} [env]
  * @returns {ReturnType<typeof createConnectionManager>}
  */
-export function connect(env = process.env) {
+function connect(env = process.env) {
   if (!sharedConnection) {
     sharedConnection = createConnectionFromEnv(env);
   }
@@ -114,7 +115,7 @@ export function connect(env = process.env) {
 /**
  * 共有接続を閉じてシングルトンをリセットする。
  */
-export async function disconnect() {
+async function disconnect() {
   if (!sharedConnection) {
     return;
   }
@@ -123,3 +124,11 @@ export async function disconnect() {
   sharedConnection = null;
   await db.close();
 }
+
+module.exports = {
+  createSequelize,
+  createConnectionManager,
+  createConnectionFromEnv,
+  connect,
+  disconnect,
+};

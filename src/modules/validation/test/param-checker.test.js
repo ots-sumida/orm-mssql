@@ -1,13 +1,12 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import {
-  assertSqlParamsMatch,
+'use strict';
+
+const { describe, it } = require('node:test');
+const assert = require('node:assert/strict');
+const { assertSqlParamsMatch,
   checkSqlParams,
   extractSqlParamNames,
-  validateSqlParams,
-} from '../sql/param-checker.js';
-import { ValidationError } from '../common/well-used-validation.js';
-
+  validateSqlParams, } = require('../sql/param-checker');
+const { ValidationError } = require('../common/well-used-validation');
 describe('extractSqlParamNames', () => {
   it(':name を抽出する', () => {
     const sql = 'SELECT * FROM users WHERE email = :email AND id = :id';

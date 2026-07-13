@@ -1,6 +1,7 @@
-import { User } from './tables/user.js';
-import { formatRowAsCsv, formatRowsAsCsv } from '../modules/db/db.js';
+'use strict';
 
+const { User } = require('./tables/user');
+const { formatRowAsCsv, formatRowsAsCsv } = require('../modules/db/db');
 const USER_CSV_COLUMNS = ['id', 'name', 'email'];
 
 /**
@@ -27,7 +28,7 @@ async function withTransaction(fn) {
  * @param {{ name: string, email: string }} params
  * @param {{ transaction?: import('sequelize').Transaction }} [options]
  */
-export async function createUser({ name, email }, { transaction } = {}) {
+async function createUser({ name, email }, { transaction } = {}) {
   const queryOptions = transaction ? { transaction } : {};
 
   const existing = await User.findOne({
@@ -45,7 +46,7 @@ export async function createUser({ name, email }, { transaction } = {}) {
   return user;
 }
 
-export async function createSampleUsers() {
+async function createSampleUsers() {
   await withTransaction(async (transaction) => {
     await createUser({ name: '山田太郎', email: 'taro@example.com' }, { transaction });
     await createUser({ name: '佐藤花子', email: 'hanako@example.com' }, { transaction });
@@ -54,7 +55,7 @@ export async function createSampleUsers() {
   console.log('createSampleUsers: トランザクション commit 完了');
 }
 
-export async function runUserDemo() {
+async function runUserDemo() {
   await withTransaction(async (transaction) => {
     const user = await User.findOne({
       where: { email: 'taro@example.com' },
@@ -78,14 +79,13 @@ export async function runUserDemo() {
   }
 }
 
-export { withTransaction };
 
 /**
  * 複数 ID をプール経由で並列取得する。
  *
  * @param {number[]} ids
  */
-export async function findUsersByIdsParallel(ids) {
+async function findUsersByIdsParallel(ids) {
   const results = await Promise.all(
     ids.map((id) => User.findByPk(id)),
   );
@@ -98,7 +98,7 @@ export async function findUsersByIdsParallel(ids) {
  * @param {{ header?: boolean }} [options]
  * @returns {Promise<string>}
  */
-export async function listAllUsersAsCsv({ header = true } = {}) {
+async function listAllUsersAsCsv({ header = true } = {}) {
   const users = await User.findAll({
     order: [['id', 'ASC']],
     raw: true,
@@ -112,7 +112,7 @@ export async function listAllUsersAsCsv({ header = true } = {}) {
  * @param {string} email
  * @returns {Promise<string | null>}
  */
-export async function findUserAsCsv(email) {
+async function findUserAsCsv(email) {
   const user = await User.findOne({
     where: { email },
     raw: true,
@@ -124,3 +124,13 @@ export async function findUserAsCsv(email) {
 
   return formatRowAsCsv(user, USER_CSV_COLUMNS);
 }
+
+module.exports = {
+  createUser,
+  createSampleUsers,
+  runUserDemo,
+  withTransaction,
+  findUsersByIdsParallel,
+  listAllUsersAsCsv,
+  findUserAsCsv,
+};

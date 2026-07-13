@@ -1,14 +1,15 @@
-import dotenv from 'dotenv';
-import { assertValid, parseBoolean, parseInteger, requireAllNonEmpty } from '../../validation/common/well-used-validation.js';
-import { defaultDbOptions } from '../client/sqlsv-client-config.js';
+'use strict';
 
+const dotenv = require('dotenv');
+const { assertValid, parseBoolean, parseInteger, requireAllNonEmpty } = require('../../validation/common/well-used-validation');
+const { defaultDbOptions } = require('../client/sqlsv-client-config');
 /**
  * .env / process.env から DB 接続設定を取得する。
  *
  * @param {NodeJS.ProcessEnv} [env]
  * @returns {import('../client/sqlsv-client-config.js').DbConfig}
  */
-export function loadDbConfigFromEnv(env = process.env) {
+function loadDbConfigFromEnv(env = process.env) {
   dotenv.config();
 
   const {
@@ -51,3 +52,7 @@ export function loadDbConfigFromEnv(env = process.env) {
     logging: parseBoolean(DB_LOGGING, false),
   };
 }
+
+module.exports = {
+  loadDbConfigFromEnv,
+};

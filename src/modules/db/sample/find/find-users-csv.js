@@ -1,7 +1,8 @@
-import { withDb } from '../../db.js';
-import { formatRowAsCsv, formatRowsAsCsv } from '../../format/csv-format.js';
-import { User } from '../../../../models/tables/user.js';
+'use strict';
 
+const { withDb } = require('../../db');
+const { formatRowAsCsv, formatRowsAsCsv } = require('../../format/csv-format');
+const { User } = require('../../../../models/tables/user');
 const COLUMNS = ['id', 'name', 'email'];
 
 try {

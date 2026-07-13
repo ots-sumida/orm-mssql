@@ -1,5 +1,6 @@
-import { parseBoolean, parseInteger } from '../../validation/common/well-used-validation.js';
+'use strict';
 
+const { parseBoolean, parseInteger } = require('../../validation/common/well-used-validation');
 /**
  * @typedef {Object} DbConfig
  * @property {string} host
@@ -18,10 +19,9 @@ import { parseBoolean, parseInteger } from '../../validation/common/well-used-va
  * @property {boolean} logging
  */
 
-export { parseBoolean, parseInteger };
 
 /** @type {Pick<DbConfig, 'poolMax' | 'poolMin' | 'poolAcquire' | 'poolIdle' | 'connectTimeout' | 'requestTimeout'>} */
-export const defaultDbOptions = {
+const defaultDbOptions = {
   poolMax: 10,
   poolMin: 0,
   poolAcquire: 30000,
@@ -34,7 +34,7 @@ export const defaultDbOptions = {
  * @param {unknown} value
  * @returns {string}
  */
-export function formatSqlLiteral(value) {
+function formatSqlLiteral(value) {
   if (value === null || value === undefined) {
     return 'NULL';
   }
@@ -58,7 +58,7 @@ export function formatSqlLiteral(value) {
  * @param {Record<string, unknown> | unknown[]} parameters
  * @returns {string}
  */
-export function inlineSqlParameters(sql, parameters) {
+function inlineSqlParameters(sql, parameters) {
   if (!parameters || typeof parameters !== 'object') {
     return sql;
   }
@@ -88,7 +88,7 @@ export function inlineSqlParameters(sql, parameters) {
  * @param {string} sql
  * @returns {string}
  */
-export function resolveExecutableSql(options, sql) {
+function resolveExecutableSql(options, sql) {
   let executableSql = sql;
 
   if (options.replacements) {
@@ -106,7 +106,7 @@ export function resolveExecutableSql(options, sql) {
  * @param {string} sql
  * @returns {boolean}
  */
-export function shouldSkipSqlLog(options, sql) {
+function shouldSkipSqlLog(options, sql) {
   if (options.type === 'SHOWTABLES' || options.type === 'SHOWINDEXES' || options.type === 'VERSION') {
     return true;
   }
@@ -118,7 +118,7 @@ export function shouldSkipSqlLog(options, sql) {
 /**
  * @param {import('sequelize').Sequelize} sequelize
  */
-export function attachSqlDebugLogging(sequelize) {
+function attachSqlDebugLogging(sequelize) {
   sequelize.addHook('afterQuery', (options, query) => {
     if (!query.sql) {
       return;
@@ -137,7 +137,7 @@ export function attachSqlDebugLogging(sequelize) {
  * @param {boolean} enabled
  * @returns {false}
  */
-export function resolveSequelizeLogging(enabled) {
+function resolveSequelizeLogging(enabled) {
   return enabled ? false : false;
 }
 
@@ -145,7 +145,7 @@ export function resolveSequelizeLogging(enabled) {
  * @param {DbConfig} dbConfig
  * @returns {import('sequelize').Options}
  */
-export function buildSequelizeOptions(dbConfig) {
+function buildSequelizeOptions(dbConfig) {
   return {
     host: dbConfig.host,
     port: dbConfig.port,
@@ -171,3 +171,16 @@ export function buildSequelizeOptions(dbConfig) {
     logQueryParameters: false,
   };
 }
+
+module.exports = {
+  formatSqlLiteral,
+  inlineSqlParameters,
+  resolveExecutableSql,
+  shouldSkipSqlLog,
+  attachSqlDebugLogging,
+  resolveSequelizeLogging,
+  buildSequelizeOptions,
+  parseBoolean,
+  parseInteger,
+  defaultDbOptions,
+};

@@ -1,6 +1,7 @@
-import { DataTypes } from 'sequelize';
-import { connect } from '../../modules/db/db.js';
+'use strict';
 
+const { DataTypes } = require('sequelize');
+const { connect } = require('../../modules/db/db');
 const { sequelize } = connect();
 
 /**
@@ -13,7 +14,7 @@ const { sequelize } = connect();
  */
 
 /** @type {import('sequelize').ModelStatic<import('sequelize').Model<UserAttributes>>} */
-export const User = sequelize.define('User', {
+const User = sequelize.define('User', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -32,3 +33,7 @@ export const User = sequelize.define('User', {
   tableName: 'users',
   timestamps: true,
 });
+
+module.exports = {
+  User,
+};

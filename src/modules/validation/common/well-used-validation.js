@@ -1,8 +1,10 @@
+'use strict';
+
 /**
  * バリデーション失敗時に throw するエラー。
  * messages は文字列または文字列配列を受け取る。
  */
-export class ValidationError extends Error {
+class ValidationError extends Error {
   /** @param {string | string[]} messages */
   constructor(messages) {
     const list = Array.isArray(messages) ? messages : [messages];
@@ -17,7 +19,7 @@ export class ValidationError extends Error {
  * @param {string} fieldName
  * @returns {string | null} エラーメッセージ。問題なければ null
  */
-export function requireNonEmptyString(value, fieldName) {
+function requireNonEmptyString(value, fieldName) {
   if (value === undefined || value === null || value === '') {
     return `${fieldName} が未設定です`;
   }
@@ -32,7 +34,7 @@ export function requireNonEmptyString(value, fieldName) {
  * @param {{ prefix?: string }} [options]
  * @returns {string[]}
  */
-export function requireAllNonEmpty(values, fieldNames, { prefix = '' } = {}) {
+function requireAllNonEmpty(values, fieldNames, { prefix = '' } = {}) {
   const errors = [];
 
   for (const fieldName of fieldNames) {
@@ -57,14 +59,14 @@ export function requireAllNonEmpty(values, fieldNames, { prefix = '' } = {}) {
  * @param {Array<string | null | undefined | false>} results
  * @returns {string[]}
  */
-export function collectErrors(...results) {
+function collectErrors(...results) {
   return results.flat().filter((value) => typeof value === 'string' && value.length > 0);
 }
 
 /**
  * @param {string[]} errors
  */
-export function assertValid(errors) {
+function assertValid(errors) {
   if (errors.length > 0) {
     throw new ValidationError(errors);
   }
@@ -75,7 +77,7 @@ export function assertValid(errors) {
  * @param {boolean} defaultValue
  * @returns {boolean}
  */
-export function parseBoolean(value, defaultValue) {
+function parseBoolean(value, defaultValue) {
   if (value === undefined || value === '') {
     return defaultValue;
   }
@@ -88,7 +90,7 @@ export function parseBoolean(value, defaultValue) {
  * @param {number} defaultValue
  * @returns {number}
  */
-export function parseInteger(value, defaultValue) {
+function parseInteger(value, defaultValue) {
   if (value === undefined || value === '') {
     return defaultValue;
   }
@@ -100,3 +102,13 @@ export function parseInteger(value, defaultValue) {
 
   return parsed;
 }
+
+module.exports = {
+  requireNonEmptyString,
+  requireAllNonEmpty,
+  collectErrors,
+  assertValid,
+  parseBoolean,
+  parseInteger,
+  ValidationError,
+};

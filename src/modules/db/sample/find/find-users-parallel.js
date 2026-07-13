@@ -1,6 +1,7 @@
-import { withDb } from '../../db.js';
-import { User } from '../../../../models/tables/user.js';
+'use strict';
 
+const { withDb } = require('../../db');
+const { User } = require('../../../../models/tables/user');
 try {
   await withDb(async () => {
     console.log('接続成功\n');
